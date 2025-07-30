@@ -23,10 +23,10 @@ def generate():
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
-        output = replicate.run(
-            "tencentarc/gfpgan:1.4",  # ✅ doğru model versiyonu
-            input={"img": image_url}
-        )
+       output = replicate.run(
+  "tencentarc/gfpgan:92895e48c621c3f19aa9e584cff0980483c0a801",
+  input={"img": image_url}
+)
         return jsonify({"result": output})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
