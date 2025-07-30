@@ -4,19 +4,13 @@ import os
 
 app = Flask(__name__)
 
-# Render'dan ortam değişkeni olarak API token alınır
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
-
-if not REPLICATE_API_TOKEN:
-    raise ValueError("REPLICATE_API_TOKEN environment variable not set")
-
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.json
     image_url = data.get("image")
-
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
 
@@ -25,8 +19,12 @@ def generate():
             "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
             input={"img": image_url}
         )
-        # output artık direkt URL stringi olarak dönüyor
-        return jsonify({"result": output})
+
+        # output bir FileOutput objesi, URL'yi almak için .url() kullan
+        result_url = output.url()
+
+        return jsonify({"result": result_url})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
