@@ -4,17 +4,17 @@ import os
 
 app = Flask(__name__)
 
-# 🔐 Replicate API anahtarını ortam değişkeninden al
+# Ortam değişkeninden token al
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
 
 if not REPLICATE_API_TOKEN:
-    raise ValueError("REPLICATE_API_TOKEN is not set in environment variables.")
+    raise ValueError("REPLICATE_API_TOKEN is not set.")
 
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
 @app.route("/")
 def home():
-    return "Sac AI Server is up and running!"
+    return "Sac AI Server aktif!"
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -25,8 +25,10 @@ def generate():
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
+        # ✅ Çalışan versiyon ID — test edildi
+        model_version = "92895e48c621c3f19aa9e584cff0980483c0a801"
         output = replicate.run(
-            "tencentarc/gfpgan:92895e48c621c3f19aa9e584cff0980483c0a801",
+            f"tencentarc/gfpgan:{model_version}",
             input={"img": image_url}
         )
         return jsonify({"result": output})
