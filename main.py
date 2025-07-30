@@ -4,8 +4,13 @@ import os
 
 app = Flask(__name__)
 
+# ✅ Replicate API token'ı ortam değişkeninden al
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
+
+@app.route("/")
+def home():
+    return "Sac AI Server is live"
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -18,14 +23,17 @@ def generate():
     try:
         output = replicate_client.run(
             "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
-            input={"img": image_url}
+            input={
+                "img": image_url,
+                "scale": 2
+            }
         )
 
-        # output string olarak geliyorsa direkt kullan
-        result_url = output
+        # 🔍 DEBUG çıktıyı yazdır
+        print("DEBUG OUTPUT:", output)
+        print("DEBUG TYPE:", type(output))
 
-        return jsonify({"result": result_url})
-
+        return jsonify({"result": output})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
