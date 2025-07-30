@@ -4,8 +4,17 @@ import os
 
 app = Flask(__name__)
 
-# Replicate API token'ı Render panelinden Environment Variables olarak eklenecek!
-# os.environ["REPLICATE_API_TOKEN"] = "xxx"  # BUNU BURADA TUTMA!
+# 🔐 Replicate API anahtarını ortam değişkeninden al
+REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
+
+if not REPLICATE_API_TOKEN:
+    raise ValueError("REPLICATE_API_TOKEN is not set in environment variables.")
+
+os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
+
+@app.route("/")
+def home():
+    return "Sac AI Server is up and running!"
 
 @app.route("/generate", methods=["POST"])
 def generate():
