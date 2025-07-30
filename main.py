@@ -12,7 +12,7 @@ def generate():
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
     try:
-        output = replicate.run("tencentarc/gfpgan:1.4", input={"img": image_url})
+       output = replicate.run("tencentarc/gfpgan", input={"img": image_url})
         return jsonify({"result": output})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
