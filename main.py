@@ -25,8 +25,8 @@ def generate():
             }
         )
 
-        # output bir FileOutput objesi, onun url() metodunu çağır
-        result_url = output.url()
+        # output zaten string URL, direkt kullan
+        result_url = output
 
         return jsonify({"result": result_url})
     except Exception as e:
