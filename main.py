@@ -4,9 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Ortam değişkeninden token al
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
-
 if not REPLICATE_API_TOKEN:
     raise ValueError("REPLICATE_API_TOKEN is not set.")
 
@@ -25,10 +23,8 @@ def generate():
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
-        # ✅ Çalışan versiyon ID — test edildi
-        model_version = "92895e48c621c3f19aa9e584cff0980483c0a801"
         output = replicate.run(
-            f"tencentarc/gfpgan:{model_version}",
+            "tencentarc/gfpgan:1.4",  # ✅ doğru model versiyonu
             input={"img": image_url}
         )
         return jsonify({"result": output})
