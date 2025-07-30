@@ -20,21 +20,17 @@ def generate():
             "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
             input={
                 "img": image_url,
-                "scale": 2
+                "scale": 2,
+                "version": "v1.4"
             }
         )
 
-        if not output:
-            return jsonify({"error": "No result returned from model"}), 500
+        # output bir FileOutput objesi, onun url() metodunu çağır
+        result_url = output.url()
 
-        return jsonify({"result": output[0]})
-
+        return jsonify({"result": result_url})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route("/", methods=["GET"])
-def home():
-    return "Sac AI Server is live", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
