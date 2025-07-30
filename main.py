@@ -4,8 +4,9 @@ import os
 
 app = Flask(__name__)
 
-# 🔐 Replicate API anahtarını ortam değişkeninden al
-os.environ["REPLICATE_API_TOKEN"] = "r8_senin_tokenin_buraya"
+# ✅ Replicate API token ortam değişkeninden alınır
+REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
+replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 @app.route("/generate", methods=["POST"])
 def generate():
@@ -16,14 +17,20 @@ def generate():
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
-        output = replicate.run(
+        # ✅ Replicate modelini çalıştır (GFPGAN v1.4 daha iyi sonuç verir)
+        output = replicate_client.run(
             "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
-            input={"img": image_url}
+            input={
+                "img": image_url,
+                "scale": 2
+            }
         )
 
-        # Çıktıyı string URL olarak dön
-        result_url = str(output[0]) if isinstance(output, list) else str(output)
-        return jsonify({"result": result_url})
+        # ✅ output genellikle liste döner → ilk elemanı al
+        if isinstance(output, list) and len(output) > 0:
+            return jsonify({"result": output[0]})
+        else:
+            return jsonify({"error": "No result returned from model"}), 500
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
