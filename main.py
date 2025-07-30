@@ -29,7 +29,7 @@ def generate():
         )
 
         # 🔁 Liste döner, ilk elemanı al
-        return jsonify({"result": output[0]})
+        return jsonify({"result": output})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
