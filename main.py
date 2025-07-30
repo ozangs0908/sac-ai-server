@@ -5,14 +5,15 @@ import logging
 
 app = Flask(__name__)
 
-# 🚨 Loglar terminalde çıksın
+# Loglama ayarları
 logging.basicConfig(level=logging.INFO)
 
-# ✅ Ortam değişkeninden API token al
+# Ortam değişkeninden API token al
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
 if not REPLICATE_API_TOKEN:
     raise RuntimeError("REPLICATE_API_TOKEN is not set")
 
+# Replicate istemcisi başlat
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 @app.route("/")
@@ -23,35 +24,34 @@ def home():
 def generate():
     data = request.json
     image_url = data.get("image")
+    prompt = data.get("prompt", "add short hair to the person")  # Varsayılan prompt
 
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
-        # 📤 Girdi logu
-        logging.info(f"Received image URL: {image_url}")
+        logging.info(f"Image: {image_url}")
+        logging.info(f"Prompt: {prompt}")
 
         output = replicate_client.run(
-            "tencentarc/gfpgan:0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
+            "cjwbw/instruct-pix2pix:latest",
             input={
-                "img": image_url,
-                "scale": 2
+                "image": image_url,
+                "prompt": prompt,
+                "num_inference_steps": 30,
+                "guidance_scale": 7.5,
+                "image_guidance_scale": 1.5
             }
         )
 
-        # 🧪 Output tipi logla
-        logging.info(f"Raw output: {output}")
-        logging.info(f"Output type: {type(output)}")
+        logging.info(f"Output: {output}")
 
-        # 🛠️ Eğer liste ise ilk elemanı al
         if isinstance(output, list):
             return jsonify({"result": output[0]})
-        
-        # 🛠️ Eğer string değilse stringe çevir
         return jsonify({"result": str(output)})
-    
+
     except replicate.exceptions.ReplicateError as e:
-        logging.error(f"Replicate API Error: {e}")
+        logging.error(f"ReplicateError: {e}")
         return jsonify({"error": f"ReplicateError: {str(e)}"}), 500
 
     except Exception as e:
