@@ -34,7 +34,7 @@ def generate():
         logging.info(f"Prompt: {prompt}")
 
         output = replicate_client.run(
-            "cjwbw/instruct-pix2pix:latest",
+            "cjwbw/instruct-pix2pix:0cf6b731947c0e52f335e131d89c9408c7139d31bb65e8ee7cd6cfc1f5c2f22b",
             input={
                 "image": image_url,
                 "prompt": prompt,
@@ -46,6 +46,7 @@ def generate():
 
         logging.info(f"Output: {output}")
 
+        # Eğer liste olarak dönüyorsa ilk elemanı al
         if isinstance(output, list):
             return jsonify({"result": output[0]})
         return jsonify({"result": str(output)})
