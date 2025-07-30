@@ -11,6 +11,7 @@ replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 def generate():
     data = request.json
     image_url = data.get("image")
+
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
 
@@ -20,8 +21,8 @@ def generate():
             input={"img": image_url}
         )
 
-        # output bir FileOutput objesi, URL'yi almak için .url() kullan
-        result_url = output.url()
+        # output string olarak geliyorsa direkt kullan
+        result_url = output
 
         return jsonify({"result": result_url})
 
