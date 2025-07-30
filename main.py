@@ -3,7 +3,7 @@ import replicate
 import os
 
 app = Flask(__name__)
-os.environ["REPLICATE_API_TOKEN"] = "r8_OSRSG4ma4tD8hiwgcyI5l2gs8H4bIRc0slp7A"
+#os.environ["REPLICATE_API_TOKEN"] = "TEST"
 
 @app.route("/generate", methods=["POST"])
 def generate():
