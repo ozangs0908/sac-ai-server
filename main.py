@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
 import replicate
 import os
-import logging
 
 app = Flask(__name__)
-logging.basicConfig(level=logging.INFO)
 
 # ✅ Replicate API token'ı ortamdan al
 REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
@@ -28,10 +26,11 @@ def generate():
         return jsonify({"error": "Image URL is required"}), 400
 
     try:
-        logging.info(f"Image URL: {image_url}")
-        logging.info(f"Prompt: {prompt}")
+        # 🧾 LOG YAZDIR
+        print("📸 IMAGE URL:", image_url)
+        print("💬 PROMPT:", prompt)
 
-        # ✅ Doğru parametrelerle modeli çalıştır
+        # ✅ Replicate modeli çalıştır
         output = replicate_client.run(
             "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
             input={
@@ -41,7 +40,7 @@ def generate():
             }
         )
 
-        logging.info(f"Output: {output}")
+        print("✅ OUTPUT:", output)
 
         # ✅ Eğer sonuç listse, ilk URL’yi döndür
         if isinstance(output, list):
@@ -49,11 +48,11 @@ def generate():
         return jsonify({"result": str(output)})
 
     except replicate.exceptions.ReplicateError as e:
-        logging.error(f"Replicate API Error: {e}")
+        print("🔥 REPLICATE ERROR:", e)
         return jsonify({"error": f"ReplicateError: {str(e)}"}), 500
 
     except Exception as e:
-        logging.error(f"Unhandled Exception: {e}")
+        print("💥 UNHANDLED EXCEPTION:", e)
         return jsonify({"error": f"Exception: {str(e)}"}), 500
 
 if __name__ == "__main__":
