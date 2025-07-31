@@ -20,7 +20,7 @@ def home():
 def generate():
     data = request.json
     image_url = data.get("image")
-    prompt = data.get("prompt", "add short black hairstyle, do not modify the face")
+    prompt = data.get("prompt", "Add a short black hairstyle, keep the face unchanged")
 
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
@@ -30,8 +30,9 @@ def generate():
         print("💬 PROMPT:", prompt)
         start_time = time.time()
 
+        # ✅ FLUX modeli doğru versiyon ID ile çağrılıyor
         output = replicate_client.run(
-            "flux-kontext-apps/change-haircut",
+            "flux-kontext-apps/change-haircut:bcb74d7c4db17efb87e2b8ddf0a2c152d69a9b1cfdb5cd8b3770b3c8cb1fcbe8",
             input={
                 "input_image": image_url,
                 "prompt": prompt
