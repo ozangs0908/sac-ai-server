@@ -31,15 +31,13 @@ def generate():
         logging.info(f"Image URL: {image_url}")
         logging.info(f"Prompt: {prompt}")
 
-        # ✅ Replicate modeli çalıştır
+        # ✅ Doğru parametrelerle modeli çalıştır
         output = replicate_client.run(
             "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
             input={
                 "image": image_url,
                 "prompt": prompt,
-                "num_inference_steps": 30,
-                "image_guidance_scale": 1.5,
-                "guidance_scale": 7.5
+                "num_inference_steps": 30
             }
         )
 
@@ -59,5 +57,4 @@ def generate():
         return jsonify({"error": f"Exception: {str(e)}"}), 500
 
 if __name__ == "__main__":
-    # 💡 Render, Railway veya localhost fark etmez
     app.run(host="0.0.0.0", port=5000)
