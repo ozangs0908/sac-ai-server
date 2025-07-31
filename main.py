@@ -10,18 +10,17 @@ REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
 if not REPLICATE_API_TOKEN:
     raise RuntimeError("REPLICATE_API_TOKEN is not set")
 
-# ✅ Replicate istemcisi başlat
 replicate_client = replicate.Client(api_token=REPLICATE_API_TOKEN)
 
 @app.route("/")
 def home():
-    return "✅ Sac AI Prompt Server is Live"
+    return "✅ Sac AI Flux Server is Live"
 
 @app.route("/generate", methods=["POST"])
 def generate():
     data = request.json
     image_url = data.get("image")
-    prompt = data.get("prompt", "add short hair to the person")
+    prompt = data.get("prompt", "add short black hairstyle, do not modify the face")
 
     if not image_url:
         return jsonify({"error": "Image URL is required"}), 400
@@ -31,21 +30,18 @@ def generate():
         print("💬 PROMPT:", prompt)
         start_time = time.time()
 
-        # ✅ Replicate modeli çalıştır
         output = replicate_client.run(
-            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
+            "flux-kontext-apps/change-haircut",
             input={
-                "image": image_url,
-                "prompt": prompt,
-                "num_inference_steps": 30
+                "input_image": image_url,
+                "prompt": prompt
             }
         )
 
         elapsed = round(time.time() - start_time, 2)
         print(f"🕐 ELAPSED TIME: {elapsed} seconds")
-        print("✅ OUTPUT RAW:", output)
+        print("✅ OUTPUT:", output)
 
-        # ✅ Dönüş varsa göster
         if isinstance(output, list) and output:
             return jsonify({"result": output[0]})
         elif isinstance(output, str):
