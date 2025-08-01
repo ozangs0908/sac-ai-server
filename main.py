@@ -9,13 +9,14 @@ def flux():
     data = request.json
     image = data.get("image")
     prompt = data.get("prompt", "Add a short black haircut, keep face unchanged")
+    renk = data.get("renk", "Black")
     if not image:
         return jsonify({"error": "Image URL required"}),400
 
     try:
         output = replicate_client.run(
             "flux-kontext-apps/change-haircut:48f03523665cabe9a2e832ea9cc2d7c30ad5079cb5f1c1f07890d40596fe1f87",
-            input={"input_image": image, "haircut": prompt, "hair_color":"Black", "gender":"male"}
+            input={"input_image": image, "haircut": prompt, "hair_color": renk, "gender":"male"}
         )
         return jsonify({"result": output})
     except Exception as e:
